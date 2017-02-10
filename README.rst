@@ -1,7 +1,7 @@
 nwscan
 =======
 
-Python script to scan networks for alive hosts, uses CIDR notation.
+Scan networks for alive hosts, uses CIDR notation.
 
 Install
 -------
@@ -19,7 +19,7 @@ Usage
 
     Usage: nwscan network [options]
 
-    scan networks for alive hosts, uses CIDR notation
+    scan network for alive hosts, uses CIDR notation
 
     Options:
     --version       show program's version number and exit
