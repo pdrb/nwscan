@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-# nwscan 0.1
+# nwscan 0.2
 # author: Pedro Buteri Gonring
 # email: pedro@bigode.net
-# date: 10/02/2017
+# date: 28/10/2017
 
 import subprocess
 import sys
@@ -13,7 +13,7 @@ import ipaddr
 from socket import inet_aton
 
 
-version = '0.1'
+version = '0.2'
 
 
 # Parse and validate arguments
@@ -73,13 +73,20 @@ def get_parsed_args():
 # Check if host is alive
 def is_alive(ip, count, timeout):
     # Check platform to run the correct ping args
-    if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
+    if sys.platform.startswith('win'):
         # Run the ping command from OS, in this case Windows
+        ret = subprocess.call(
+            ['ping', '-n', str(count), '-w', str(timeout * 1000), ip],
+            stdout=open('NUL', 'w'), stderr=open('NUL', 'w')
+        )
+    elif sys.platform.startswith('cygwin'):
+        # Cygwin usually runs native Windows ping
         ret = subprocess.call(
             ['ping', '-n', str(count), '-w', str(timeout * 1000), ip],
             stdout=open('/dev/null', 'w'), stderr=open('/dev/null', 'w')
         )
     else:
+        # Linux, OSX, etc...
         ret = subprocess.call(
             ['ping', '-c', str(count), '-i', '0.2', '-W', str(timeout), ip],
             stdout=open('/dev/null', 'w'), stderr=open('/dev/null', 'w')
