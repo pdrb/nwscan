@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-# nwscan 0.2
+# nwscan 0.3
 # author: Pedro Buteri Gonring
 # email: pedro@bigode.net
-# date: 28/10/2017
+# date: 20190109
 
 import subprocess
 import sys
@@ -13,7 +13,7 @@ import ipaddr
 from socket import inet_aton
 
 
-version = '0.2'
+version = '0.3'
 
 
 # Parse and validate arguments
@@ -125,32 +125,34 @@ def cli():
             with open(options.input_file, 'r') as f:
                 lines = f.read().splitlines()
         except Exception as ex:
-            print ex
+            print(ex)
             sys.exit(1)
         for item in lines:
             if '/' not in item:
-                print '\nerror: %s does not appear to be in CIDR format' % item
+                print(
+                    '\nerror: %s does not appear to be in CIDR format' % item
+                )
                 sys.exit(1)
             try:
                 network = ipaddr.IPv4Network(item)
             except (ipaddr.AddressValueError, ipaddr.NetmaskValueError):
-                print '\nerror: %s is not a valid network' % item
+                print('\nerror: %s is not a valid network' % item)
                 sys.exit(1)
             network_ips = [str(ip) for ip in network.iterhosts()]
             ips += network_ips
     # Get network from command line
     else:
         if '/' not in args[0]:
-            print '\nerror: %s does not appear to be in CIDR format' % args[0]
+            print('\nerror: %s does not appear to be in CIDR format' % args[0])
             sys.exit(1)
         try:
             network = ipaddr.IPv4Network(args[0])
         except (ipaddr.AddressValueError, ipaddr.NetmaskValueError):
-            print '\nerror: %s is not a valid network' % args[0]
+            print('\nerror: %s is not a valid network' % args[0])
             sys.exit(1)
         ips = [str(ip) for ip in network.iterhosts()]
 
-    print 'Scanning %d hosts...\n' % len(ips)
+    print('Scanning %d hosts...\n' % len(ips))
 
     # Create thread pool of workers
     pool = ThreadPool(processes=options.workers)
@@ -161,7 +163,7 @@ def cli():
         pool.close()
         pool.join()
     except KeyboardInterrupt:
-        print 'Aborting.'
+        print('Aborting.')
         sys.exit(1)
 
     # Save ips to file if needed
@@ -174,17 +176,17 @@ def cli():
                 for ip in output_list:
                     f.write('%s\n' % ip)
         except Exception as ex:
-            print ex
+            print(ex)
             sys.exit(1)
 
-    print '\nFinished: %d hosts scanned' % len(ips)
+    print('\nFinished: %d hosts scanned' % len(ips))
     if options.reverse:
-        print 'Not responding hosts: %d' % len(output_list)
+        print('Not responding hosts: %d' % len(output_list))
     else:
-        print 'Alive hosts: %d' % len(output_list)
+        print('Alive hosts: %d' % len(output_list))
 
     if options.output_file is not None:
-        print "\nIPs list saved to '%s'" % options.output_file
+        print("\nIPs list saved to '%s'" % options.output_file)
 
 
 # Run cli function if invoked from shell
